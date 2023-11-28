@@ -1,5 +1,5 @@
 /**
- * List the files in a specified folder and return the path of the file chosen by the user.
+ * List the files in a specified folder and return the path of the file chosen by the user. 
  * @param {string} Folder Folder Path. 
  * @param {string} Ext File Type. (e.g. jpg|png|gif)
  * @returns {string} The path of the file that the user selected, or an empty string if the user did not select any file.
