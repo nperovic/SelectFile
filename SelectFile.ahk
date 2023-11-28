@@ -28,7 +28,7 @@ SelectFile(Folder, Ext := "", timeout?)
     CancelBtn := MyGui.Add("Button", "w50 yp", "Cancel")
     SwitchViewBtn.OnEvent("Click", SwitchView)
     SelectBtn.OnEvent("Click", (*) => MyGui.Destroy())
-    CancelBtn.OnEvent("Click", (*) => (result := 0, MyGui.Destroy()))
+    CancelBtn.OnEvent("Click", (*) => (result := "", MyGui.Destroy()))
 
     ContextMenu := Menu()
     ContextMenu.Add("Open", ContextOpenOrProperties)
@@ -46,8 +46,10 @@ SelectFile(Folder, Ext := "", timeout?)
     }
     MyGui.Show()
 
-    if !WinWaitClose(MyGui,, timeout?)
+    if !WinWaitClose(MyGui,, timeout?) {
+        MyGui.Destroy()
         return 0
+    }
 
     return result
 
