@@ -1,6 +1,6 @@
 /**
- * List the files in a specified folder and return the path of the file chosen by the user. 
- * @param {string} Folder Folder Path. 
+ * List the files in a specified folder and return the path of the file chosen by the user.
+ * @param {string} Folder Folder Path.
  * @param {string} Ext File Type. (e.g. jpg|png|gif)
  * @returns {string} The path of the file that the user selected, or an empty string if the user did not select any file.
  */
@@ -33,7 +33,7 @@ SelectFile(Folder, Ext := "")
 	ContextMenu.Add("Clear from ListView", ContextClearRows)
 	ContextMenu.Default := "Open"
 
-	LoadFolder(Folder, Ext)
+	LoadFolder()
 	MyGui.Show("Hide AutoSize")
 	MyGui.GetClientPos(&MyGuiX, &MyGuiY, &MyGuiW, &MyGuiH)
 	for ctrl in [SelectBtn, CancelBtn]
@@ -51,20 +51,19 @@ SelectFile(Folder, Ext := "")
 		if !row
 			return
 
-		result := (LV.GetText(row, 2) "\" LV.GetText(row, 1))
+		result := format("{1}\{2}", LV.GetText(row, 2), LV.GetText(row, 1))
 
 		if dbclick
 			myGui.Destroy()
 	}
 
-	LoadFolder(Folder, Ext)
+	LoadFolder()
 	{
 		static IconMap := Map()
 		if !Folder
 			return
 
-		if SubStr(Folder, -1, 1) = "\"
-			Folder := SubStr(Folder, 1, -1)
+		Folder := RTrim(Folder, "\ ")
 
 		sfi_size := A_PtrSize + 688
 		sfi := Buffer(sfi_size)
@@ -72,7 +71,8 @@ SelectFile(Folder, Ext := "")
 		LV.Opt("-Redraw")
 		Loop Files, Folder "\*.*"
 		{
-			if !Ext && !(A_LoopFileExt ~= "iS)" Ext)
+
+			if Ext && !(A_LoopFileExt ~= "iS)" Ext)
 				continue
 
 			FileName := A_LoopFilePath
@@ -131,12 +131,11 @@ SelectFile(Folder, Ext := "")
 
 	RunFile(LV, RowNumber)
 	{
-		FileName := LV.GetText(RowNumber, 1)
-		FileDir := LV.GetText(RowNumber, 2)
+		FullPath := format("{1}\{2}", LV.GetText(RowNumber, 2), LV.GetText(RowNumber, 1))
 		try
-			Run(FileDir "\" FileName)
+			Run(FullPath)
 		catch
-			MsgBox("Could not open " FileDir "\" FileName ".")
+			MsgBox("Could not open " FullPath ".")
 	}
 
 	ShowContextMenu(LV, Item, IsRightClick, X, Y) => ContextMenu.Show(X, Y)
@@ -147,17 +146,17 @@ SelectFile(Folder, Ext := "")
 		if not FocusedRowNumber
 			return
 
-		FileName := LV.GetText(FocusedRowNumber, 1)
-		FileDir := LV.GetText(FocusedRowNumber, 2)
+		FullPath := format("{1}\{2}", LV.GetText(FocusedRowNumber, 2), LV.GetText(FocusedRowNumber, 1))
+		
 		try
 		{
 			if (ItemName = "Open")
-				Run(FileDir "\" FileName)
+				Run(FullPath)
 			else
-				Run("properties " FileDir "\" FileName)
+				Run("properties " FullPath)
 		}
 		catch
-			MsgBox("Could not perform requested action on " FileDir "\" FileName ".")
+			MsgBox("Could not perform requested action on " FullPath ".")
 	}
 
 	ContextClearRows(*)
